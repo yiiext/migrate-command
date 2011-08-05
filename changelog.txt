@@ -1,3 +1,7 @@
+0.3.1 (2011-08-05)
+-----
+- fixed a problem with finding new migrations (cebe)
+
 0.3.0 (2011-08-05)
 -----
 - added base migration for every single module (cebe)

@@ -19,7 +19,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'EDbMigration.php');
  *
  * @link http://www.yiiframework.com/doc/guide/1.1/en/database.migration
  * @author Carsten Brandt <mail@cebe.cc>
- * @version 0.3.0
+ * @version 0.3.1
  */
 class EMigrateCommand extends MigrateCommand
 {
@@ -201,7 +201,7 @@ class EMigrateCommand extends MigrateCommand
 		}
 
 		if ($this->_scopeNewMigrations) {
-			$select = "version, apply_time";
+			$select = "version AS versionName, apply_time";
 			$params = array();
 		} else {
 			$select = "CONCAT(module,:delimiter,version) AS versionName, apply_time";
