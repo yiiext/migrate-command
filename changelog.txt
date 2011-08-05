@@ -1,3 +1,7 @@
+0.3.0 (2011-08-05)
+-----
+- added base migration for every single module (cebe)
+
 0.2.2 (2011-08-05)
 -----
 - fixed problem with history and down migration when --module parameter is set (cebe)

@@ -19,7 +19,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'EDbMigration.php');
  *
  * @link http://www.yiiframework.com/doc/guide/1.1/en/database.migration
  * @author Carsten Brandt <mail@cebe.cc>
- * @version 0.2.2
+ * @version 0.3.0
  */
 class EMigrateCommand extends MigrateCommand
 {
@@ -197,11 +197,6 @@ class EMigrateCommand extends MigrateCommand
 				'apply_time'=>'integer',
 				'module'=>'VARCHAR(32)',
 			));
-			$db->createCommand()->insert($this->migrationTable, array(
-				'version'=>self::BASE_MIGRATION,
-				'apply_time'=>time(),
-				'module'=>'',
-			));
 			echo "done.\n";
 		}
 
@@ -231,14 +226,30 @@ class EMigrateCommand extends MigrateCommand
 
 	protected function migrateUp($class)
 	{
-		$module = '';
+		$module = $this->applicationModuleName;
 		// remove module if given
 		if (($pos = mb_strpos($class, $this->moduleDelimiter)) !== false) {
 			$module = mb_substr($class, 0, $pos);
 			$class = mb_substr($class, $pos + mb_strlen($this->moduleDelimiter));
 		}
-		// add module information to migration table
+		// create base migration for module if none exists
+		$db = $this->getDbConnection();
+		if (!$db->createCommand()->select('version')
+								 ->from($this->migrationTable)
+								 ->where('module=:module')
+								 ->queryRow(true, array(':module'=>$module)))
+		{
+			$db->createCommand()->insert($this->migrationTable, array(
+				'version'=>self::BASE_MIGRATION . '_' . $module,
+				'apply_time'=>time(),
+				'module'=>$module,
+			));
+		}
+		if(mb_strpos($class, self::BASE_MIGRATION) === 0) {
+			return;
+		}
 		if (($ret = parent::migrateUp($class)) !== false) {
+			// add module information to migration table
 			$this->getDbConnection()->createCommand()->update(
 				$this->migrationTable,
 				array('module'=>$module),
@@ -255,7 +266,10 @@ class EMigrateCommand extends MigrateCommand
 		if (($pos = mb_strpos($class, $this->moduleDelimiter)) !== false) {
 			$class = mb_substr($class, $pos + mb_strlen($this->moduleDelimiter));
 		}
-		return parent::migrateDown($class);
+
+		if(mb_strpos($class, self::BASE_MIGRATION) !== 0) {
+			return parent::migrateDown($class);
+		}
 	}
 
 
