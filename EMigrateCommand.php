@@ -17,9 +17,10 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'EDbMigration.php');
  *
  *  - module dependencies (planned, not yet implemented)
  *
+ * @link http://www.yiiframework.com/extension/extended-database-migration/
  * @link http://www.yiiframework.com/doc/guide/1.1/en/database.migration
  * @author Carsten Brandt <mail@cebe.cc>
- * @version 0.3.1
+ * @version 0.4.0
  */
 class EMigrateCommand extends MigrateCommand
 {
@@ -162,6 +163,7 @@ class EMigrateCommand extends MigrateCommand
 		require_once($class.'.php');
 		$migration=new $class;
 		$migration->setDbConnection($this->getDbConnection());
+		$migration->interactive = $this->interactive;
 		return $migration;
 	}
 

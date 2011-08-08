@@ -1,5 +1,4 @@
 Extended Migration Command
 ==========================
 
-Documentation coming soon...
-Also in russian language ;-)
+Russian documentation coming soon...

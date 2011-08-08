@@ -1,25 +1,20 @@
-0.3.1 (2011-08-05)
------
+Changelog
+---------
+
+#### 0.4.0 (2011-08-08)
+
+- added confirm() method to EDbMigration (cebe)
+
+#### 0.3.1 (2011-08-05)
+
 - fixed a problem with finding new migrations (cebe)
-
-0.3.0 (2011-08-05)
------
 - added base migration for every single module (cebe)
-
-0.2.2 (2011-08-05)
------
 - fixed problem with history and down migration when --module parameter is set (cebe)
-
-0.2.1 (2011-08-05)
------
 - added $moduleDelimiter property and replaced string function with multibyte versions (cebe)
-
-0.2.0 (2011-08-05)
------
 - complete refactoring of basic functionality, more stability and more straight forward (cebe)
 
-0.1.0 (2011-08-04)
------
+#### 0.1.0 (2011-08-04)
+
 - Initial public release (cebe)
 - module support for migrations
 - extended execute() of CDbMigration with parameter $verbose

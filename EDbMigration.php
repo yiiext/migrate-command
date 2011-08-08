@@ -1,9 +1,28 @@
 <?php
 
-
+/**
+ * EDbMigration
+ *
+ * this class will be rewritten the next weeks...
+ *
+ * @link http://www.yiiframework.com/extension/extended-database-migration/
+ * @link http://www.yiiframework.com/doc/guide/1.1/en/database.migration
+ * @author Carsten Brandt <mail@cebe.cc>
+ * @version 0.4.0
+ */
 class EDbMigration extends CDbMigration
 {
 	public $module = null;
+
+	public $interactive = true;
+
+	public function confirm($message)
+	{
+		if(!$this->interactive)
+			return true;
+		echo $message.' [yes|no] ';
+		return !strncasecmp(trim(fgets(STDIN)),'y',1);
+	}
 
 	public function __toString()
 	{
