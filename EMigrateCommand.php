@@ -148,9 +148,25 @@ class EMigrateCommand extends MigrateCommand
 		parent::actionCreate($args);
 	}
 
+	public function actionUp($args)
+	{
+		$this->_scopeAddModule = true;
+		parent::actionUp($args);
+		$this->_scopeAddModule = false;
+	}
+
+	public function actionDown($args)
+	{
+		$this->_scopeAddModule = true;
+		parent::actionDown($args);
+		$this->_scopeAddModule = false;
+	}
+
 	public function actionTo($args)
 	{
-		die('migrate to does not yet work with modules.' . "\n\n");
+		$this->_scopeAddModule = false;
+		parent::actionTo($args);
+		$this->_scopeAddModule = true;
 	}
 
 	public function actionMark($args)
