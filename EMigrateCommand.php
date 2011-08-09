@@ -20,7 +20,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'EDbMigration.php');
  * @link http://www.yiiframework.com/extension/extended-database-migration/
  * @link http://www.yiiframework.com/doc/guide/1.1/en/database.migration
  * @author Carsten Brandt <mail@cebe.cc>
- * @version 0.4.0
+ * @version 0.5.0
  */
 class EMigrateCommand extends MigrateCommand
 {
@@ -155,7 +155,35 @@ class EMigrateCommand extends MigrateCommand
 
 	public function actionMark($args)
 	{
-		die('migrate mark does not yet work with modules.' . "\n\n");
+		// migrations that need to be updated after command
+		$migrations = $this->getNewMigrations();
+
+		// run mark action
+		$this->_scopeAddModule = false;
+		parent::actionMark($args);
+		$this->_scopeAddModule = true;
+
+		// update migration table with modules
+		$command = $this->getDbConnection()->createCommand()
+					    ->select('version')
+					    ->from($this->migrationTable)
+					    ->where('module IS NULL');
+
+		foreach($command->queryColumn() as $version) {
+			$module = null;
+			foreach($migrations as $migration) {
+				list($module, $migration) = explode($this->moduleDelimiter, $migration);
+				if ($migration == $version) {
+					break;
+				}
+			}
+			$this->getDbConnection()->createCommand()->update(
+				$this->migrationTable,
+				array('module' => $module),
+				'version=:version',
+				array(':version' => $version)
+			);
+		}
 	}
 
 	protected function instantiateMigration($class)
@@ -169,6 +197,7 @@ class EMigrateCommand extends MigrateCommand
 
 	// set to not add modules when getHistory is called for getNewMigrations
 	private $_scopeNewMigrations = false;
+	private $_scopeAddModule = true;
 
 	protected function getNewMigrations()
 	{
@@ -179,13 +208,17 @@ class EMigrateCommand extends MigrateCommand
 		{
 			$this->migrationPath = $path;
 			foreach(parent::getNewMigrations() as $migration) {
-				$migrations[$migration] = $module.$this->moduleDelimiter.$migration;
+				if ($this->_scopeAddModule) {
+					$migrations[$migration] = $module.$this->moduleDelimiter.$migration;
+				} else {
+					$migrations[$migration] = $migration;
+				}
 			}
 		}
 		$this->_scopeNewMigrations = false;
 
 		ksort($migrations);
-		return $migrations;
+		return array_values($migrations);
 	}
 
 	protected function getMigrationHistory($limit)
@@ -202,7 +235,7 @@ class EMigrateCommand extends MigrateCommand
 			echo "done.\n";
 		}
 
-		if ($this->_scopeNewMigrations) {
+		if ($this->_scopeNewMigrations || !$this->_scopeAddModule) {
 			$select = "version AS versionName, apply_time";
 			$params = array();
 		} else {
@@ -289,7 +322,7 @@ EXTENDED USAGE EXAMPLES (with modules)
 
   all other commands work exactly as described above.
 
-  commands 'mark' and 'to' are not yet available.
+  command 'to' is not yet available.
 
 EOD;
 	}
