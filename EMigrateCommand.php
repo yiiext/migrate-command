@@ -193,6 +193,9 @@ class EMigrateCommand extends MigrateCommand
 					break;
 				}
 			}
+
+			$this->ensureBaseMigration($module);
+
 			$this->getDbConnection()->createCommand()->update(
 				$this->migrationTable,
 				array('module' => $module),
@@ -275,6 +278,32 @@ class EMigrateCommand extends MigrateCommand
 		return CHtml::listData($command->queryAll(true, $params), 'versionName', 'apply_time');
 	}
 
+	/**
+	 * create base migration for module if none exists
+	 *
+	 * @param $module
+	 * @return void
+	 */
+	protected function ensureBaseMigration($module)
+	{
+		$baseName = self::BASE_MIGRATION . '_' . $module;
+		$db = $this->getDbConnection();
+		if (!$db->createCommand()->select('version')
+								 ->from($this->migrationTable)
+								 ->where('module=:module AND version=:version')
+								 ->queryRow(true, array(':module'=>$module, 'version'=>$baseName)))
+		{
+			$db->createCommand()->insert(
+				$this->migrationTable,
+				array(
+					'version'=>$baseName,
+					'apply_time'=>time(),
+					'module'=>$module,
+				)
+			);
+		}
+	}
+
 	protected function migrateUp($class)
 	{
 		$module = $this->applicationModuleName;
@@ -283,19 +312,9 @@ class EMigrateCommand extends MigrateCommand
 			$module = mb_substr($class, 0, $pos);
 			$class = mb_substr($class, $pos + mb_strlen($this->moduleDelimiter));
 		}
-		// create base migration for module if none exists
-		$db = $this->getDbConnection();
-		if (!$db->createCommand()->select('version')
-								 ->from($this->migrationTable)
-								 ->where('module=:module')
-								 ->queryRow(true, array(':module'=>$module)))
-		{
-			$db->createCommand()->insert($this->migrationTable, array(
-				'version'=>self::BASE_MIGRATION . '_' . $module,
-				'apply_time'=>time(),
-				'module'=>$module,
-			));
-		}
+
+		$this->ensureBaseMigration($module);
+
 		if(mb_strpos($class, self::BASE_MIGRATION) === 0) {
 			return;
 		}

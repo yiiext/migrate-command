@@ -5,6 +5,7 @@ Changelog
 
 - implemented mark-action so it now works with modules (cebe)
 - implemented to-action so it now works with modules (cebe)
+- fixed problem that base-migrations where not cretated on mark command (cebe)
 
 #### 0.4.0 (2011-08-08)
 
