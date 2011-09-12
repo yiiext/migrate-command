@@ -255,10 +255,10 @@ class EMigrateCommand extends MigrateCommand
 		}
 
 		if ($this->_scopeNewMigrations || !$this->_scopeAddModule) {
-			$select = "version AS versionName, apply_time";
+			$select = "version AS version_name, apply_time";
 			$params = array();
 		} else {
-			$select = "CONCAT(module,:delimiter,version) AS versionName, apply_time";
+			$select = "(module || :delimiter || version) AS version_name, apply_time";
 			$params = array(':delimiter' => $this->moduleDelimiter);
 		}
 
@@ -275,7 +275,7 @@ class EMigrateCommand extends MigrateCommand
 			$params += $criteria->params;
 		}
 
-		return CHtml::listData($command->queryAll(true, $params), 'versionName', 'apply_time');
+		return CHtml::listData($command->queryAll(true, $params), 'version_name', 'apply_time');
 	}
 
 	/**

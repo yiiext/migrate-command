@@ -1,6 +1,10 @@
 Changelog
 ---------
 
+#### 0.6.0 (2011-09-12)
+
+- adjusted sql commands to be compatible with sqlite and postgres (cebe)
+
 #### 0.5.0 (2011-08-09)
 
 - implemented mark-action so it now works with modules (cebe)
