@@ -19,7 +19,7 @@ Features
 Resources
 ---------
 
-* [SVN](http://code.google.com/p/yiiext/source/browse/trunk/app/extensions/yiiext/commands/migrate)
+* [GIT](https://github.com/yiiext/migrate-command), [SVN](http://code.google.com/p/yiiext/source/browse/trunk/app/extensions/yiiext/commands/migrate) (deprecated)
 * [Yii Database Migration Documentation](http://www.yiiframework.com/doc/guide/1.1/en/database.migration)
 * [Discuss](http://www.yiiframework.com/forum/index.php?/topic/22471-extension-extended-database-migration/)
 * [Report a bug/request feature](http://code.google.com/p/yiiext/issues/list)
