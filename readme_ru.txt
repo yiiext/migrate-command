@@ -3,7 +3,7 @@ Extended Migration Command
 
 Данное расширение — расширенная версия [миграций Yii](http://www.yiiframework.com/doc/guide/1.1/ru/database.migration),
 которая добавляет поддержку модулей и некоторые дополнительные возможности. Если у вас есть пожелания
-или вы нашли ошибки, пишите [в трекер проекта](http://code.google.com/p/yiiext/issues/list) или [напрямую автору](mailto:mail@cebe.cc) (по-английски).
+или вы нашли ошибки, пишите [в трекер проекта](https://github.com/yiiext/migrate-command/issues) или [напрямую автору](mailto:mail@cebe.cc) (по-английски).
 
 Возможнсти
 ----------
@@ -19,10 +19,10 @@ Extended Migration Command
 Ссылки
 ------
 
-* [SVN](http://code.google.com/p/yiiext/source/browse/trunk/app/extensions/yiiext/commands/migrate)
+* [GIT](https://github.com/yiiext/migrate-command), [SVN](http://code.google.com/p/yiiext/source/browse/trunk/app/extensions/yiiext/commands/migrate) (устаревшие)
 * [Документация по миграциям Yii](http://www.yiiframework.com/doc/guide/1.1/ru/database.migration)
 * [Обсуждение](http://www.yiiframework.com/forum/index.php?/topic/22471-extension-extended-database-migration/)
-* [Сообщить об ошибке или предложить функционал](http://code.google.com/p/yiiext/issues/list)
+* [Сообщить об ошибке или предложить функционал](https://github.com/yiiext/migrate-command/issues)
 
 Требования
 ----------
