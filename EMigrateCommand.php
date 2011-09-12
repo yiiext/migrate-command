@@ -210,7 +210,9 @@ class EMigrateCommand extends MigrateCommand
 		require_once($class.'.php');
 		$migration=new $class;
 		$migration->setDbConnection($this->getDbConnection());
-		$migration->interactive = $this->interactive;
+        if ($migration instanceof EDbMigration) {
+		    $migration->interactive = $this->interactive;
+        }
 		return $migration;
 	}
 
