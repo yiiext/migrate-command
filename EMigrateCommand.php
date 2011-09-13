@@ -20,7 +20,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'EDbMigration.php');
  * @link http://www.yiiframework.com/extension/extended-database-migration/
  * @link http://www.yiiframework.com/doc/guide/1.1/en/database.migration
  * @author Carsten Brandt <mail@cebe.cc>
- * @version 0.5.0
+ * @version 0.6.0
  */
 class EMigrateCommand extends MigrateCommand
 {
