@@ -1,9 +1,13 @@
 Changelog
 ---------
 
-#### 0.6.0 (2011-09-12)
+#### 0.7.0 (2011-09-21)
 
-- adjusted sql commands to be compatible with sqlite and postgres (cebe)
+- adjusted sql commands to be compatible with nearly all pdo db systems (cebe)
+
+#### 0.6.0 (2011-09-12) not released, did not work
+
+- adjusted sql commands to be compatible with sqlite and postgres (cebe thanks to redguy)
 - added compatibility with CDbMigration, migrations need not extend EDbMigration (cebe)
 
 #### 0.5.0 (2011-08-09)

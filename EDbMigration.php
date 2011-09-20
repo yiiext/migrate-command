@@ -3,7 +3,7 @@
 /**
  * EDbMigration
  *
- * this class will be rewritten the next weeks...
+ * this class will be completely rewritten soon...
  *
  * @link http://www.yiiframework.com/extension/extended-database-migration/
  * @link http://www.yiiframework.com/doc/guide/1.1/en/database.migration

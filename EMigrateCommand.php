@@ -260,7 +260,26 @@ class EMigrateCommand extends MigrateCommand
 			$select = "version AS version_name, apply_time";
 			$params = array();
 		} else {
-			$select = "(module || :delimiter || version) AS version_name, apply_time";
+            /*
+             * switch concat functions for different db systems
+             * please let me know if your system is not switched
+             * correctly here. File a bug here:
+             * https://github.com/yiiext/migrate-command/issues
+             */
+            switch ($db->getDriverName())
+            {
+                case 'mysql':
+                    $select = "CONCAT(module, :delimiter, version) AS version_name, apply_time";
+                break;
+                case 'mssql': // http://msdn.microsoft.com/en-us/library/aa276862%28v=sql.80%29.aspx
+                case 'sqlsrv':
+                case 'cubrid': // http://www.cubrid.org/manual/840/en/Concatenation%20Operator
+                    $select = "(module + :delimiter + version) AS version_name, apply_time";
+                break;
+                default: // SQL-ANSI default: sqlite, firebird, ibm, informix, oci, pgsql, sqlite, sqlite2
+                         // not sure what to do with odbc
+                    $select = "(module || :delimiter || version) AS version_name, apply_time";
+            }
 			$params = array(':delimiter' => $this->moduleDelimiter);
 		}
 
