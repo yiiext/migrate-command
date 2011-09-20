@@ -3,7 +3,7 @@ Extended Migration Command
 
 This extension is an enhanced version of the [Yii Database Migration Tool](http://www.yiiframework.com/doc/guide/1.1/en/database.migration)
 that adds module support and many more usefull features. If there is anything you would like to have added, or you found a bug
-please [report it](https://github.com/yiiext/migrate-command/issues) on google code or [contact me](mailto:mail@cebe.cc) via email.
+please [report it](https://github.com/yiiext/migrate-command/issues) on github or [contact me](mailto:mail@cebe.cc) via email.
 
 Features
 --------

@@ -8,7 +8,7 @@
  * @link http://www.yiiframework.com/extension/extended-database-migration/
  * @link http://www.yiiframework.com/doc/guide/1.1/en/database.migration
  * @author Carsten Brandt <mail@cebe.cc>
- * @version 0.4.0
+ * @version 0.7.0
  */
 class EDbMigration extends CDbMigration
 {
