@@ -1,8 +1,5 @@
 <?php
 
-Yii::import('system.cli.commands.MigrateCommand');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'EDbMigration.php');
-
 /**
  * EMigrateCommand manages the database migrations.
  *
@@ -22,26 +19,22 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'EDbMigration.php');
  * @author Carsten Brandt <mail@cebe.cc>
  * @version 0.7.0
  */
+
+Yii::import('system.cli.commands.MigrateCommand');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'EDbMigration.php');
+
+/**
+ * EMigrateCommand manages the database migrations.
+ *
+ * @property array|null $modulePaths list of all modules
+ * @property array $enabledModulePaths list of all enabled modules
+ * @property array $disabledModules list of all disabled modules names
+ *
+ * @author Carsten Brandt <mail@cebe.cc>
+ * @version 0.7.0
+ */
 class EMigrateCommand extends MigrateCommand
 {
-	/**
-	 * @var array list of all modules
-	 * array(
-	 *      'modname' => 'application.modules.modname.db.migrations',
-	 * )
-	 */
-	public $modulePaths = array();
-
-	/**
-	 * @var array list of disabled modules
-	 * array(
-	 *      'examplemodule1',
-	 *      'examplemodule2',
-	 *      ...
-	 * )
-	 */
-	public $disabledModules = array();
-
 	/**
 	 * @var string|null the current module(s) to use for current command (comma separated list)
 	 * defaults to null which means all modules are used
@@ -61,7 +54,111 @@ class EMigrateCommand extends MigrateCommand
 	 */
 	public $moduleDelimiter = ': ';
 
+	/**
+	 * @var array|null list of all modules
+	 * @see getModulePaths()
+	 * @see setModulePaths()
+	 */
+	private $_modulePaths = null;
+
+	/**
+	 * @var array
+	 * @see getDisabledModules()
+	 * @see setDisabledModules()
+	 */
+	private $_disabledModules = array();
+
 	protected $migrationModuleMap = array();
+
+	/**
+	 * @return array list of all modules
+	 */
+	public function getModulePaths()
+	{
+		if ($this->_modulePaths === null) {
+			$this->_modulePaths = array();
+			foreach(Yii::app()->modules as $module => $config) {
+				if (is_array($config)) {
+					$alias = 'application.modules.' . $module . '.migrations';
+					if (isset($config['class'])) {
+						Yii::setPathOfAlias($alias, dirname(Yii::getPathOfAlias($config['class'])) . '/migrations');
+					} elseif(isset($config['basePath'])) {
+						Yii::setPathOfAlias($alias, $config['basePath'] . '/migrations');
+					}
+					$this->_modulePaths[$module] = $alias;
+					$path = Yii::getPathOfAlias($alias);
+					if($path === false || !is_dir($path)) {
+						echo 'Notice: The migration directory does not exist: ' . $path . "\n";
+						$this->_disabledModules[] = $module;
+					}
+
+				} else {
+					$this->_modulePaths[$config] = 'application.modules.' . $config . '.migrations';
+				}
+			}
+		}
+		// add a pseudo-module 'core'
+		$this->_modulePaths[$this->applicationModuleName] = $this->migrationPath;
+		print_r($this->_modulePaths);
+		return $this->_modulePaths;
+	}
+
+	/**
+	 * @var array|null list of all modules
+	 * If set to null, which is default, yii applications module config will be used
+	 * If modules are taken from yii application config, all entries will be
+	 * 'moduleName' => 'application.modules.<moduleName>.migrations',
+	 * If 'class' or 'basePath' are set in module config the above path alias is
+	 * set to class/basePath with {@see Yii::setPathOfAlias()}.
+	 *
+	 * example:
+	 * array(
+	 *      'moduleName' => 'application.modules.moduleName.db.migrations',
+	 * )
+	 */
+	public function setModulePaths($modulePaths)
+	{
+		$this->_modulePaths = $modulePaths;
+	}
+
+	/**
+	 * @return array list of all disabled modules names
+	 */
+	public function getDisabledModules()
+	{
+		foreach($this->_disabledModules as $module) {
+			if (!array_key_exists($module, $this->modulePaths)) {
+				unset($this->_disabledModules[$module]);
+			}
+		}
+		return $this->_disabledModules;
+	}
+
+	/**
+	 * @param array $modules list of all disabled modules names
+	 * you can add modules here to temporarily disable them
+	 * array(
+	 *      'examplemodule1',
+	 *      'examplemodule2',
+	 *      ...
+	 * )
+	 */
+	public function setDisabledModules($modules)
+	{
+		$this->_disabledModules = is_array($modules) ? $modules : array();
+	}
+
+	/**
+	 * @return array list of all enabled modules
+	 */
+	public function getEnabledModulePaths()
+	{
+		$modules = $this->getModulePaths();
+		foreach($this->getDisabledModules() as $module) {
+			unset($modules[$module]);
+		}
+		return $modules;
+	}
 
 	/**
 	 * prepare paths before any action
@@ -73,10 +170,11 @@ class EMigrateCommand extends MigrateCommand
 	public function beforeAction($action, $params)
 	{
 		Yii::import($this->migrationPath . '.*');
-		if ($return = parent::beforeAction($action, $params)) {
+		if (parent::beforeAction($action, $params)) {
 
 			echo "extended with EMigrateCommand by cebe <mail@cebe.cc>\n\n";
 
+			// check --module parameter
 			if ($action == 'create' && !is_null($this->module)) {
 				$this->usageError('create command can not be called with --module parameter!');
 			}
@@ -84,25 +182,14 @@ class EMigrateCommand extends MigrateCommand
 				$this->usageError('parameter --module must be a comma seperated list of modules or a single module name!');
 			}
 
-
-			// add a pseudo-module 'core'
-			$this->modulePaths[$this->applicationModuleName] = $this->migrationPath;
-
-			// remove disabled modules
-			$disabledModules = array();
-			foreach($this->modulePaths as $module => $pathAlias) {
-				if (in_array($module, $this->disabledModules)) {
-					unset($this->modulePaths[$module]);
-					$disabledModules[] = $module;
-				}
-			}
-			if (!empty($disabledModules)) {
-				echo "The following modules are disabled: " . implode(', ', $disabledModules) . "\n";
+			// inform user about disabled modules
+			if (!empty($this->disabledModules)) {
+				echo "The following modules are disabled: " . implode(', ', $this->disabledModules) . "\n";
 			}
 
 			// only add modules that are desired by command
 			$modules = false;
-			if (!is_null($this->module)) {
+			if ($this->module !== null) {
 				$modules = explode(',', $this->module);
 
 				// error if specified module does not exist
@@ -116,33 +203,30 @@ class EMigrateCommand extends MigrateCommand
 			echo "\n";
 
 			// initialize modules
-			foreach($this->modulePaths as $module => $pathAlias) {
+			foreach($this->getEnabledModulePaths() as $module => $pathAlias) {
 				if ($modules === false || in_array($module, $modules)) {
 					// nothing to do for application core module
 					if ($module == $this->applicationModuleName) {
 						continue;
 					}
-					$path = Yii::getPathOfAlias($pathAlias);
-					if($path === false || !is_dir($path))
-						die('Error: The migration directory does not exist: ' . $pathAlias . "\n");
-					$this->modulePaths[$module] = $path;
 					Yii::import($pathAlias . '.*');
 				} else {
-					unset($this->modulePaths[$module]);
+					unset($this->_modulePaths[$module]);
 				}
 			}
+			return true;
 		}
-		return $return;
+		return false;
 	}
 
 	public function actionCreate($args)
 	{
 		// if module is given adjust path
 		if(count($args)==2) {
-			$this->migrationPath = $this->modulePaths[$args[0]];
+			$this->migrationPath = Yii::getPathOfAlias($this->enabledModulePaths[$args[0]]);
 			$args = array($args[1]);
 		} else {
-			$this->migrationPath = $this->modulePaths[$this->applicationModuleName];
+			$this->migrationPath = Yii::getPathOfAlias($this->enabledModulePaths[$this->applicationModuleName]);
 		}
 
 		parent::actionCreate($args);
@@ -225,9 +309,9 @@ class EMigrateCommand extends MigrateCommand
 		$this->_scopeNewMigrations = true;
 		$migrations = array();
 		// get new migrations for all new modules
-		foreach($this->modulePaths as $module => $path)
+		foreach($this->enabledModulePaths as $module => $path)
 		{
-			$this->migrationPath = $path;
+			$this->migrationPath = Yii::getPathOfAlias($path);
 			foreach(parent::getNewMigrations() as $migration) {
 				if ($this->_scopeAddModule) {
 					$migrations[$migration] = $module.$this->moduleDelimiter.$migration;
