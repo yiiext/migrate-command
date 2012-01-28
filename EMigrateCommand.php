@@ -274,6 +274,7 @@ class EMigrateCommand extends MigrateCommand
 		$this->_scopeAddModule = true;
 
 		// update migration table with modules
+		/** @var CDbCommand $command */
 		$command = $this->getDbConnection()->createCommand()
 					    ->select('version')
 					    ->from($this->migrationTable)
@@ -339,6 +340,7 @@ class EMigrateCommand extends MigrateCommand
 
 	protected function getMigrationHistory($limit)
 	{
+		/** @var CDbConnection $db */
 		$db=$this->getDbConnection();
 		if ($db->schema->getTable($this->migrationTable)===null)
 		{
