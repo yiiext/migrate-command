@@ -48,7 +48,7 @@ Extended Migration Command
             'migrationTable' => 'tbl_migration',
 	        // имя псевдомодуля для общих миграций. По умолчанию равно "core".
             'applicationModuleName' => 'core',
-	        // определяем все модули, для которых нужны миграции  (если вы не установите, модули будут взяты из Yii конфигурации)
+	        // определяем все модули, для которых нужны миграции  (в противном случае, модули будут взяты из конфигурации Yii)
 	        'modulePaths' => array(
 		        'admin'      => 'application.modules.admin.db.migrations',
 		        'user'       => 'application.modules.user.db.migrations',
