@@ -227,13 +227,18 @@ class EMigrateCommand extends MigrateCommand
 	public function actionCreate($args)
 	{
 		// if module is given adjust path
-		if (count($args)==2) { // @todo: check if module is existing
-			$this->migrationPath = Yii::getPathOfAlias($this->enabledModulePaths[$args[0]]);
+		if (count($args)==2) {
+			if (!isset($this->modulePaths[$args[0]])) {
+				die("\nError: module '{$args[0]}' is not available!\n\n");
+			}
+			$this->migrationPath = Yii::getPathOfAlias($this->modulePaths[$args[0]]);
 			$args = array($args[1]);
 		} else {
-			$this->migrationPath = Yii::getPathOfAlias($this->enabledModulePaths[$this->applicationModuleName]);
+			$this->migrationPath = Yii::getPathOfAlias($this->modulePaths[$this->applicationModuleName]);
 		}
-
+		if (!is_dir($this->migrationPath)) {
+			die("\nError: '{$this->migrationPath}' does not exist or is not a directory!\n\n");
+		}
 		parent::actionCreate($args);
 	}
 
