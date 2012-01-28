@@ -19,7 +19,7 @@ Extended Migration Command
 Ссылки
 ------
 
-* [GIT](https://github.com/yiiext/migrate-command), [SVN](http://code.google.com/p/yiiext/source/browse/trunk/app/extensions/yiiext/commands/migrate) (устаревшие)
+* [GIT](https://github.com/yiiext/migrate-command)
 * [Документация по миграциям Yii](http://www.yiiframework.com/doc/guide/1.1/ru/database.migration)
 * [Обсуждение](http://www.yiiframework.com/forum/index.php?/topic/22471-extension-extended-database-migration/)
 * [Сообщить об ошибке или предложить функционал](https://github.com/yiiext/migrate-command/issues)
@@ -48,7 +48,7 @@ Extended Migration Command
             'migrationTable' => 'tbl_migration',
 	        // имя псевдомодуля для общих миграций. По умолчанию равно "core".
             'applicationModuleName' => 'core',
-	        // определяем все модули, для которых нужны миграции
+	        // определяем все модули, для которых нужны миграции  (если вы не установите, модули будут взяты из Yii конфигурации)
 	        'modulePaths' => array(
 		        'admin'      => 'application.modules.admin.db.migrations',
 		        'user'       => 'application.modules.user.db.migrations',

@@ -19,7 +19,7 @@ Features
 Resources
 ---------
 
-* [GIT](https://github.com/yiiext/migrate-command), [SVN](http://code.google.com/p/yiiext/source/browse/trunk/app/extensions/yiiext/commands/migrate) (deprecated)
+* [GIT](https://github.com/yiiext/migrate-command)
 * [Yii Database Migration Documentation](http://www.yiiframework.com/doc/guide/1.1/en/database.migration)
 * [Discuss](http://www.yiiframework.com/forum/index.php?/topic/22471-extension-extended-database-migration/)
 * [Report a bug/request feature](https://github.com/yiiext/migrate-command/issues)
@@ -49,7 +49,7 @@ Installation
             'migrationTable' => 'tbl_migration',
 	        // the application migrations are in a pseudo-module called "core" by default
             'applicationModuleName' => 'core',
-	        // define all available modules
+	        // define all available modules (if you do not set this, modules will be set from yii app config)
 	        'modulePaths' => array(
 		        'admin'      => 'application.modules.admin.db.migrations',
 		        'user'       => 'application.modules.user.db.migrations',
