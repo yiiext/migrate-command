@@ -305,7 +305,8 @@ class EMigrateCommand extends MigrateCommand
 		$migration=new $class;
 		$migration->setDbConnection($this->getDbConnection());
         if ($migration instanceof EDbMigration) {
-		    $migration->interactive = $this->interactive;
+	        /** @var EDbMigration $migration */
+	        $migration->setCommand($this);
         }
 		return $migration;
 	}
