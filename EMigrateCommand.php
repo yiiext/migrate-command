@@ -424,14 +424,14 @@ class EMigrateCommand extends MigrateCommand
 	{
 		$module = $this->applicationModuleName;
 		// remove module if given
-		if (($pos = mb_strpos($class, $this->moduleDelimiter)) !== false) {
-			$module = mb_substr($class, 0, $pos);
-			$class = mb_substr($class, $pos + mb_strlen($this->moduleDelimiter));
+		if (($pos = $this->strpos($class, $this->moduleDelimiter)) !== false) {
+			$module = $this->substr($class, 0, $pos);
+			$class = $this->substr($class, $pos + $this->strlen($this->moduleDelimiter));
 		}
 
 		$this->ensureBaseMigration($module);
 
-		if (mb_strpos($class, self::BASE_MIGRATION) === 0) {
+		if ($this->strpos($class, self::BASE_MIGRATION) === 0) {
 			return;
 		}
 		if (($ret = parent::migrateUp($class)) !== false) {
@@ -449,11 +449,11 @@ class EMigrateCommand extends MigrateCommand
 	protected function migrateDown($class)
 	{
 		// remove module if given
-		if (($pos = mb_strpos($class, $this->moduleDelimiter)) !== false) {
-			$class = mb_substr($class, $pos + mb_strlen($this->moduleDelimiter));
+		if (($pos = $this->strpos($class, $this->moduleDelimiter)) !== false) {
+			$class = $this->substr($class, $pos + $this->strlen($this->moduleDelimiter));
 		}
 
-		if (mb_strpos($class, self::BASE_MIGRATION) !== 0) {
+		if ($this->strpos($class, self::BASE_MIGRATION) !== 0) {
 			return parent::migrateDown($class);
 		}
 	}
@@ -478,4 +478,27 @@ EXTENDED USAGE EXAMPLES (with modules)
 EOD;
 	}
 
+	public function init()
+	{
+		parent::init();
+		$this->_mbstring=extension_loaded('mbstring');
+	}
+
+	/**
+	 * string functions will work without mbstring available like it is done in
+	 * http://code.google.com/p/yii/source/detail?r=3545
+	 */
+	private $_mbstring;
+	private function strlen($string)
+	{
+		return $this->_mbstring ? mb_strlen($string) : strlen($string);
+	}
+	private function strpos($haystack, $needle, $offset=null)
+	{
+		return $this->_mbstring ? mb_strpos($haystack, $needle, $offset) : strpos($haystack, $needle, $offset);
+	}
+	private function substr($string,$start,$length=null)
+	{
+		return $this->_mbstring ? mb_substr($string,$start,$length) : substr($string,$start,$length);
+	}
 }
