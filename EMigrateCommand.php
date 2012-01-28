@@ -60,6 +60,7 @@ class EMigrateCommand extends MigrateCommand
 	 * @see setModulePaths()
 	 */
 	private $_modulePaths = null;
+	private $_runModulePaths = null; // modules for current run
 
 	/**
 	 * @var array
@@ -82,13 +83,12 @@ class EMigrateCommand extends MigrateCommand
 					$alias = 'application.modules.' . $module . '.migrations';
 					if (isset($config['class'])) {
 						Yii::setPathOfAlias($alias, dirname(Yii::getPathOfAlias($config['class'])) . '/migrations');
-					} elseif(isset($config['basePath'])) {
+					} elseif (isset($config['basePath'])) {
 						Yii::setPathOfAlias($alias, $config['basePath'] . '/migrations');
 					}
 					$this->_modulePaths[$module] = $alias;
 					$path = Yii::getPathOfAlias($alias);
-					if($path === false || !is_dir($path)) {
-						echo 'Notice: The migration directory does not exist: ' . $path . "\n";
+					if ($path === false || !is_dir($path)) {
 						$this->_disabledModules[] = $module;
 					}
 
@@ -99,7 +99,10 @@ class EMigrateCommand extends MigrateCommand
 		}
 		// add a pseudo-module 'core'
 		$this->_modulePaths[$this->applicationModuleName] = $this->migrationPath;
-		print_r($this->_modulePaths);
+		$path = Yii::getPathOfAlias($this->migrationPath);
+		if ($path === false || !is_dir($path)) {
+			$this->_disabledModules[] = $this->applicationModuleName;
+		}
 		return $this->_modulePaths;
 	}
 
@@ -126,12 +129,14 @@ class EMigrateCommand extends MigrateCommand
 	 */
 	public function getDisabledModules()
 	{
+		// make sure modules are initialized
+		$this->getModulePaths();
 		foreach($this->_disabledModules as $module) {
 			if (!array_key_exists($module, $this->modulePaths)) {
 				unset($this->_disabledModules[$module]);
 			}
 		}
-		return $this->_disabledModules;
+		return array_unique($this->_disabledModules);
 	}
 
 	/**
@@ -169,8 +174,10 @@ class EMigrateCommand extends MigrateCommand
 	 */
 	public function beforeAction($action, $params)
 	{
-		Yii::import($this->migrationPath . '.*');
+		$tmpMigrationPath = $this->migrationPath;
+		$this->migrationPath = 'application';
 		if (parent::beforeAction($action, $params)) {
+			$this->migrationPath = $tmpMigrationPath;
 
 			echo "extended with EMigrateCommand by cebe <mail@cebe.cc>\n\n";
 
@@ -194,24 +201,22 @@ class EMigrateCommand extends MigrateCommand
 
 				// error if specified module does not exist
 				foreach ($modules as $module) {
-					if (!isset($this->modulePaths[$module])) {
+					if (in_array($module, $this->disabledModules)) {
+						die("\nError: module '$module' is disabled!\n\n");
+					}
+					if (!isset($this->enabledModulePaths[$module])) {
 						die("\nError: module '$module' is not available!\n\n");
 					}
 				}
-				echo "Current call limited to module" . (count($modules)>1 ? "s" : "") . ": " . implode(', ', $modules) . "\n";
+				echo "Current call is limited to module" . (count($modules)>1 ? "s" : "") . ": " . implode(', ', $modules) . "\n";
 			}
 			echo "\n";
 
 			// initialize modules
 			foreach($this->getEnabledModulePaths() as $module => $pathAlias) {
 				if ($modules === false || in_array($module, $modules)) {
-					// nothing to do for application core module
-					if ($module == $this->applicationModuleName) {
-						continue;
-					}
 					Yii::import($pathAlias . '.*');
-				} else {
-					unset($this->_modulePaths[$module]);
+					$this->_runModulePaths[$module] = $pathAlias;
 				}
 			}
 			return true;
@@ -222,7 +227,7 @@ class EMigrateCommand extends MigrateCommand
 	public function actionCreate($args)
 	{
 		// if module is given adjust path
-		if(count($args)==2) {
+		if (count($args)==2) { // @todo: check if module is existing
 			$this->migrationPath = Yii::getPathOfAlias($this->enabledModulePaths[$args[0]]);
 			$args = array($args[1]);
 		} else {
@@ -309,7 +314,7 @@ class EMigrateCommand extends MigrateCommand
 		$this->_scopeNewMigrations = true;
 		$migrations = array();
 		// get new migrations for all new modules
-		foreach($this->enabledModulePaths as $module => $path)
+		foreach($this->_runModulePaths as $module => $path)
 		{
 			$this->migrationPath = Yii::getPathOfAlias($path);
 			foreach(parent::getNewMigrations() as $migration) {
@@ -329,7 +334,7 @@ class EMigrateCommand extends MigrateCommand
 	protected function getMigrationHistory($limit)
 	{
 		$db=$this->getDbConnection();
-		if($db->schema->getTable($this->migrationTable)===null)
+		if ($db->schema->getTable($this->migrationTable)===null)
 		{
 			echo 'Creating migration history table "'.$this->migrationTable.'"...';
 			$db->createCommand()->createTable($this->migrationTable, array(
@@ -420,7 +425,7 @@ class EMigrateCommand extends MigrateCommand
 
 		$this->ensureBaseMigration($module);
 
-		if(mb_strpos($class, self::BASE_MIGRATION) === 0) {
+		if (mb_strpos($class, self::BASE_MIGRATION) === 0) {
 			return;
 		}
 		if (($ret = parent::migrateUp($class)) !== false) {
@@ -442,7 +447,7 @@ class EMigrateCommand extends MigrateCommand
 			$class = mb_substr($class, $pos + mb_strlen($this->moduleDelimiter));
 		}
 
-		if(mb_strpos($class, self::BASE_MIGRATION) !== 0) {
+		if (mb_strpos($class, self::BASE_MIGRATION) !== 0) {
 			return parent::migrateDown($class);
 		}
 	}
