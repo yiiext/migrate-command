@@ -405,6 +405,7 @@ class EMigrateCommand extends MigrateCommand
 	protected function ensureBaseMigration($module)
 	{
 		$baseName = self::BASE_MIGRATION . '_' . $module;
+		/** @var CDbConnection $db */
 		$db = $this->getDbConnection();
 		if (!$db->createCommand()->select('version')
 								 ->from($this->migrationTable)
@@ -460,7 +461,6 @@ class EMigrateCommand extends MigrateCommand
 		}
 	}
 
-
 	public function getHelp()
 	{
 		return parent::getHelp() . <<<EOD
@@ -480,4 +480,12 @@ EXTENDED USAGE EXAMPLES (with modules)
 EOD;
 	}
 
+	protected function getTemplate()
+	{
+		if ($this->templateFile!==null) {
+			return parent::getTemplate();
+		} else {
+			return str_replace('CDbMigration', 'EDbMigration', parent::getTemplate());
+		}
+	}
 }
