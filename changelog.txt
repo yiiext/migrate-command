@@ -1,6 +1,10 @@
 Changelog
 ---------
 
+#### 0.7.1 (2012-01-31)
+
+- fix for getTable trying to hit a db cache and die in endless loop (cebe)
+
 #### 0.7.0 (2012-01-28)
 
 - adjusted sql commands to be compatible with nearly all pdo db systems (cebe)
