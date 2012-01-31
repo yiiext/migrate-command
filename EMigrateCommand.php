@@ -342,6 +342,11 @@ class EMigrateCommand extends MigrateCommand
 	{
 		/** @var CDbConnection $db */
 		$db=$this->getDbConnection();
+
+		// avoid getTable trying to hit a db cache and die in endless loop
+		$db->schemaCachingDuration = 0;
+		Yii::app()->coreMessages->cacheID = false;
+
 		if ($db->schema->getTable($this->migrationTable)===null)
 		{
 			echo 'Creating migration history table "'.$this->migrationTable.'"...';
