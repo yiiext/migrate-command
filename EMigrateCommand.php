@@ -10,14 +10,14 @@
  *    you can create migrations in different modules
  *    so you are able to disable modules and also having their
  *    database tables removed/never set up
- *    yiic migrate down 1000 --module=examplemodule
+ *    yiic migrate to m000000_000000 --module=examplemodule
  *
  *  - module dependencies (planned, not yet implemented)
  *
  * @link http://www.yiiframework.com/extension/extended-database-migration/
  * @link http://www.yiiframework.com/doc/guide/1.1/en/database.migration
  * @author Carsten Brandt <mail@cebe.cc>
- * @version 0.7.0
+ * @version 0.7.1
  */
 
 Yii::import('system.cli.commands.MigrateCommand');
@@ -31,7 +31,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'EDbMigration.php');
  * @property array $disabledModules list of all disabled modules names
  *
  * @author Carsten Brandt <mail@cebe.cc>
- * @version 0.7.0
+ * @version 0.7.1
  */
 class EMigrateCommand extends MigrateCommand
 {
@@ -479,8 +479,6 @@ EXTENDED USAGE EXAMPLES (with modules)
    Creates a new migration named 'create_user_table' in module 'modulename'.
 
   all other commands work exactly as described above.
-
-  command 'to' is not yet available.
 
 EOD;
 	}

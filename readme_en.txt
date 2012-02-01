@@ -56,7 +56,7 @@ Installation
 		        'yourModule' => 'application.any.other.path.possible',
 		        // ...
 	        ),
-	        // here you can configrue which modules should be active, you can disable a module by adding its name to this array
+	        // here you can configure which modules should be active, you can disable a module by adding its name to this array
 	        'disabledModules' => array(
 	            'admin', 'anOtherModule', // ...
 	        ),
@@ -115,7 +115,7 @@ will migrate up the next 5 new migrations in modules core and user. If there are
    yiic migrate history --module=core,user
 ~~~
 will show you which migrations have been applied for modules core and user in the past.
-If you do not specify a module the command behaves like the native one but does the migration for all modules.
+If you do not specify a module the command behaves like the native one and does the migration for all modules.
 
 ###add a module
 

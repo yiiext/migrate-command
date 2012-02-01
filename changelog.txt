@@ -4,6 +4,7 @@ Changelog
 #### 0.7.1 (2012-01-31)
 
 - fix for getTable trying to hit a db cache and die in endless loop (cebe)
+- made sure that  mark  and  to  action are working correctly (cebe)
 
 #### 0.7.0 (2012-01-28)
 
