@@ -56,6 +56,8 @@ Installation
 		        'yourModule' => 'application.any.other.path.possible',
 		        // ...
 	        ),
+            // you can customize the modules migrations subdirectory which is used when you are using yii module config
+            'migrationSubPath' => 'migrations',
 	        // here you can configure which modules should be active, you can disable a module by adding its name to this array
 	        'disabledModules' => array(
 	            'admin', 'anOtherModule', // ...

@@ -17,7 +17,7 @@
  * @link http://www.yiiframework.com/extension/extended-database-migration/
  * @link http://www.yiiframework.com/doc/guide/1.1/en/database.migration
  * @author Carsten Brandt <mail@cebe.cc>
- * @version 0.7.1
+ * @version 0.8.0-dev
  */
 
 Yii::import('system.cli.commands.MigrateCommand');
@@ -55,6 +55,12 @@ class EMigrateCommand extends MigrateCommand
 	public $moduleDelimiter = ': ';
 
 	/**
+	 * @var string subdirectory to use for migrations in Yii alias format
+	 * this is only used if you do not set modulePath explicitly {@see setModulePaths()}
+	 */
+	public $migrationSubPath = 'migrations';
+
+	/**
 	 * @var array|null list of all modules
 	 * @see getModulePaths()
 	 * @see setModulePaths()
@@ -78,11 +84,19 @@ class EMigrateCommand extends MigrateCommand
 			$this->_modulePaths = array();
 			foreach(Yii::app()->modules as $module => $config) {
 				if (is_array($config)) {
-					$alias = 'application.modules.' . $module . '.migrations';
+					$alias = 'application.modules.' . $module . '.' . ltrim($this->migrationSubPath, '.');
 					if (isset($config['class'])) {
-						Yii::setPathOfAlias($alias, dirname(Yii::getPathOfAlias($config['class'])) . '/migrations');
+						Yii::setPathOfAlias(
+							$alias,
+							dirname(Yii::getPathOfAlias($config['class'])) . '/' .
+								str_replace('.', '/', ltrim($this->migrationSubPath, '.'))
+						);
 					} elseif (isset($config['basePath'])) {
-						Yii::setPathOfAlias($alias, $config['basePath'] . '/migrations');
+						Yii::setPathOfAlias(
+							$alias,
+							$config['basePath'] . '/' .
+								str_replace('.', '/', ltrim($this->migrationSubPath, '.'))
+						);
 					}
 					$this->_modulePaths[$module] = $alias;
 					$path = Yii::getPathOfAlias($alias);
@@ -91,7 +105,7 @@ class EMigrateCommand extends MigrateCommand
 					}
 
 				} else {
-					$this->_modulePaths[$config] = 'application.modules.' . $config . '.migrations';
+					$this->_modulePaths[$config] = 'application.modules.' . $config . '.' . ltrim($this->migrationSubPath, '.');
 				}
 			}
 		}
@@ -109,8 +123,9 @@ class EMigrateCommand extends MigrateCommand
 	 * If set to null, which is default, yii applications module config will be used
 	 * If modules are taken from yii application config, all entries will be
 	 * 'moduleName' => 'application.modules.<moduleName>.migrations',
+	 * You can change the subpath name by setting {@see migrationSubPath} which is 'migrations' per default.
 	 * If 'class' or 'basePath' are set in module config the above path alias is
-	 * set to class/basePath with {@see Yii::setPathOfAlias()}.
+	 * adjusted to class/basePath with {@see Yii::setPathOfAlias()}.
 	 *
 	 * example:
 	 * array(

@@ -1,6 +1,10 @@
 Changelog
 ---------
 
+#### 0.8.0 (to be released)
+
+- Enh: #12 added customization of 'migrations' subdirectory via $migrationSubPath (cebe thanks to redguy666)
+
 #### 0.7.1 (2012-01-31)
 
 - fix for getTable trying to hit a db cache and die in endless loop (cebe)
