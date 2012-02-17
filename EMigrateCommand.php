@@ -69,8 +69,6 @@ class EMigrateCommand extends MigrateCommand
 	 */
 	private $_disabledModules = array();
 
-	protected $migrationModuleMap = array();
-
 	/**
 	 * @return array list of all modules
 	 */
