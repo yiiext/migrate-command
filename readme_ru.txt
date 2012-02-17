@@ -55,7 +55,7 @@ Extended Migration Command
 		        'yourModule' => 'application.any.other.path.possible',
 		        // ...
 	        ),
-            // you can customize the modules migrations subdirectory which is used when you are using yii module config
+            // можно задать имя поддиректории для хранения миграций в директории модуля
             'migrationSubPath' => 'migrations',
 	        // отключаем некоторые модули
 	        'disabledModules' => array(
