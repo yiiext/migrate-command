@@ -215,10 +215,12 @@ class EMigrateCommand extends MigrateCommand
 				// error if specified module does not exist
 				foreach ($modules as $module) {
 					if (in_array($module, $this->disabledModules)) {
-						die("\nError: module '$module' is disabled!\n\n");
+						echo "\nError: module '$module' is disabled!\n\n";
+						exit(1);
 					}
 					if (!isset($this->enabledModulePaths[$module])) {
-						die("\nError: module '$module' is not available!\n\n");
+						echo "\nError: module '$module' is not available!\n\n";
+						exit(1);
 					}
 				}
 				echo "Current call is limited to module" . (count($modules)>1 ? "s" : "") . ": " . implode(', ', $modules) . "\n";
@@ -242,7 +244,8 @@ class EMigrateCommand extends MigrateCommand
 		// if module is given adjust path
 		if (count($args)==2) {
 			if (!isset($this->modulePaths[$args[0]])) {
-				die("\nError: module '{$args[0]}' is not available!\n\n");
+				echo "\nError: module '{$args[0]}' is not available!\n\n";
+				return 1;
 			}
 			$this->migrationPath = Yii::getPathOfAlias($this->modulePaths[$args[0]]);
 			$args = array($args[1]);
@@ -250,30 +253,34 @@ class EMigrateCommand extends MigrateCommand
 			$this->migrationPath = Yii::getPathOfAlias($this->modulePaths[$this->applicationModuleName]);
 		}
 		if (!is_dir($this->migrationPath)) {
-			die("\nError: '{$this->migrationPath}' does not exist or is not a directory!\n\n");
+			echo "\nError: '{$this->migrationPath}' does not exist or is not a directory!\n\n";
+			return 1;
 		}
-		parent::actionCreate($args);
+		return parent::actionCreate($args);
 	}
 
 	public function actionUp($args)
 	{
 		$this->_scopeAddModule = true;
-		parent::actionUp($args);
+		$exitCode = parent::actionUp($args);
 		$this->_scopeAddModule = false;
+		return $exitCode;
 	}
 
 	public function actionDown($args)
 	{
 		$this->_scopeAddModule = true;
-		parent::actionDown($args);
+		$exitCode = parent::actionDown($args);
 		$this->_scopeAddModule = false;
+		return $exitCode;
 	}
 
 	public function actionTo($args)
 	{
 		$this->_scopeAddModule = false;
-		parent::actionTo($args);
+		$exitCode = parent::actionTo($args);
 		$this->_scopeAddModule = true;
+		return $exitCode;
 	}
 
 	public function actionMark($args)
@@ -283,7 +290,7 @@ class EMigrateCommand extends MigrateCommand
 
 		// run mark action
 		$this->_scopeAddModule = false;
-		parent::actionMark($args);
+		$exitCode = parent::actionMark($args);
 		$this->_scopeAddModule = true;
 
 		// update migration table with modules
@@ -311,6 +318,7 @@ class EMigrateCommand extends MigrateCommand
 				array(':version' => $version)
 			);
 		}
+		return $exitCode;
 	}
 
 	protected function instantiateMigration($class)
