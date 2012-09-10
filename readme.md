@@ -37,45 +37,44 @@ Installation
 * Extract the release file under `protected/extensions`.
 * Add the following to your [config file](http://www.yiiframework.com/doc/guide/1.1/en/database.migration#customizing-migration-command) for yiic command:
 
-~~~
-[php]
-	'commandMap' => array(
-        'migrate' => array(
-            // alias of the path where you extracted the zip file
-            'class' => 'application.extensions.yiiext.commands.migrate.EMigrateCommand',
-            // this is the path where you want your core application migrations to be created
-            'migrationPath' => 'application.db.migrations',
-            // the name of the table created in your database to save versioning information
-            'migrationTable' => 'tbl_migration',
-	        // the application migrations are in a pseudo-module called "core" by default
-            'applicationModuleName' => 'core',
-	        // define all available modules (if you do not set this, modules will be set from yii app config)
-	        'modulePaths' => array(
-		        'admin'      => 'application.modules.admin.db.migrations',
-		        'user'       => 'application.modules.user.db.migrations',
-		        'yourModule' => 'application.any.other.path.possible',
-		        // ...
-	        ),
-            // you can customize the modules migrations subdirectory which is used when you are using yii module config
-            'migrationSubPath' => 'migrations',
-	        // here you can configure which modules should be active, you can disable a module by adding its name to this array
-	        'disabledModules' => array(
-	            'admin', 'anOtherModule', // ...
-	        ),
-	        // the name of the application component that should be used to connect to the database
-            'connectionID'=>'db',
-            // alias of the template file used to create new migrations
-            'templateFile'=>'application.db.migration_template',
-        ),
-    ),
-~~~
+```php
+'commandMap' => array(
+	'migrate' => array(
+		// alias of the path where you extracted the zip file
+		'class' => 'application.extensions.yiiext.commands.migrate.EMigrateCommand',
+		// this is the path where you want your core application migrations to be created
+		'migrationPath' => 'application.db.migrations',
+		// the name of the table created in your database to save versioning information
+		'migrationTable' => 'tbl_migration',
+		// the application migrations are in a pseudo-module called "core" by default
+		'applicationModuleName' => 'core',
+		// define all available modules (if you do not set this, modules will be set from yii app config)
+		'modulePaths' => array(
+			'admin'      => 'application.modules.admin.db.migrations',
+			'user'       => 'application.modules.user.db.migrations',
+			'yourModule' => 'application.any.other.path.possible',
+			// ...
+		),
+		// you can customize the modules migrations subdirectory which is used when you are using yii module config
+		'migrationSubPath' => 'migrations',
+		// here you can configure which modules should be active, you can disable a module by adding its name to this array
+		'disabledModules' => array(
+			'admin', 'anOtherModule', // ...
+		),
+		// the name of the application component that should be used to connect to the database
+		'connectionID'=>'db',
+		// alias of the template file used to create new migrations
+		'templateFile'=>'application.db.migration_template',
+	),
+),
+```
+
 **Please note:** if you already used MigrateCommand before, make sure to add the module column to your migrationTable:
 
-~~~
-[sql]
- ALTER TABLE `tbl_migration` ADD COLUMN `module` varchar(32) DEFAULT NULL;
- UPDATE `tbl_migration` SET module='core';
-~~~
+```sql
+ALTER TABLE `tbl_migration` ADD COLUMN `module` varchar(32) DEFAULT NULL;
+UPDATE `tbl_migration` SET module='core';
+```
 
 Usage
 -----
@@ -88,14 +87,16 @@ The basics are explained in the [Definitive Guide to Yii](http://www.yiiframewor
 The usage of Extended Migration Command is not much different from the native one.
 The only command that is different is [create](http://www.yiiframework.com/doc/guide/1.1/en/database.migration#creating-migrations) where you have to additionally specify the modulename:
 
-~~~
-   yiic migrate create modulename create_user_table
-~~~
+```
+yiic migrate create modulename create_user_table
+```
+
 This creates a new migration named 'create_user_table' in module 'modulename'. The native usage
 
-~~~
-   yiic migrate create create_user_table
-~~~
+```
+yiic migrate create create_user_table
+```
+
 creates a new migration named 'create_user_table' in the application(core).
 
 ###--module Parameter
@@ -103,19 +104,22 @@ creates a new migration named 'create_user_table' in the application(core).
 In all other commands (`up`, `down`, `history`, `new`, `to` and `mark`) you can use the parameter `--module=<modulenames>` where `<modulenames>` can be a comma seperated list of module names or a single module name. This parameter will limit the current command to affect only the specified modules.
 Some Examples:
 
-~~~
-   yiic migrate new --module=core
-~~~
+```
+yiic migrate new --module=core
+```
+
 This will show you all new migrations for module core and
 
-~~~
-   yiic migrate up 5 --module=core,user
-~~~
+```
+yiic migrate up 5 --module=core,user
+```
+
 will migrate up the next 5 new migrations in modules core and user. If there are new migrations in other modules they will be ignored.
 
-~~~
-   yiic migrate history --module=core,user
-~~~
+```
+yiic migrate history --module=core,user
+```
+
 will show you which migrations have been applied for modules core and user in the past.
 If you do not specify a module the command behaves like the native one and does the migration for all modules.
 
