@@ -69,12 +69,7 @@ Installation
 ),
 ```
 
-**Please note:** if you already used MigrateCommand before, make sure to add the module column to your migrationTable:
-
-```sql
-ALTER TABLE `tbl_migration` ADD COLUMN `module` varchar(32) DEFAULT NULL;
-UPDATE `tbl_migration` SET module='core';
-```
+**Please note:** if you already used MigrateCommand before, the module column will be automatically added
 
 Usage
 -----

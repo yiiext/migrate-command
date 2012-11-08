@@ -367,7 +367,7 @@ class EMigrateCommand extends MigrateCommand
 		// avoid getTable trying to hit a db cache and die in endless loop
 		$db->schemaCachingDuration = 0;
 		Yii::app()->coreMessages->cacheID = false;
-
+		$db->schema->refresh();
 		if ($db->schema->getTable($this->migrationTable)===null)
 		{
 			echo 'Creating migration history table "'.$this->migrationTable.'"...';
@@ -377,6 +377,15 @@ class EMigrateCommand extends MigrateCommand
 				'module'=>'VARCHAR(32)',
 			));
 			echo "done.\n";
+		}
+		elseif (!in_array('module', array_keys($db->schema->getTable($this->migrationTable)->columns)))
+		{
+			// add module column
+			$db->createCommand(
+				$db->schema->addColumn($this->migrationTable, 'module', 'string')
+			)->execute();
+			// update current rows to core migrations
+			$db->createCommand()->update($this->migrationTable, array('module'=>'core'));
 		}
 
 		if ($this->_scopeNewMigrations || !$this->_scopeAddModule) {
