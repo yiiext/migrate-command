@@ -355,7 +355,6 @@ class EMigrateCommand extends MigrateCommand
 		}
 		$this->_scopeNewMigrations = false;
 
-		ksort($migrations);
 		return array_values($migrations);
 	}
 
