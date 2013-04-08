@@ -193,6 +193,7 @@ class EMigrateCommand extends MigrateCommand
 			$this->migrationPath = $tmpMigrationPath;
 
 			echo "extended with EMigrateCommand by cebe <mail@cebe.cc>\n\n";
+            echo "Active database component (connectionString):\n    ".Yii::app()->{$this->connectionID}->connectionString."\n\n";
 
 			// check --module parameter
 			if ($action == 'create' && !is_null($this->module)) {
