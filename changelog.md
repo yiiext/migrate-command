@@ -4,7 +4,7 @@ Changelog
 #### 0.8.0 (to be released)
 
 - Enh: #12 added customization of 'migrations' subdirectory via $migrationSubPath (cebe thanks to redguy666)
-- Enh: show `connectionString of active database component (schmunk42)
+- Enh: show `connectionString` of active database component (schmunk42)
 
 #### 0.7.1 (2012-01-31)
 
