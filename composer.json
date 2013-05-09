@@ -4,6 +4,7 @@
     "keywords": ["yii", "extension", "database-migration"],
     "homepage": "https://github.com/yiiext/migrate-command",
     "type": "yii-extension",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Carsten Brandt",
