@@ -82,7 +82,7 @@ class EMigrateCommand extends MigrateCommand
 	{
 		if ($this->_modulePaths === null) {
 			$this->_modulePaths = array();
-			foreach(Yii::app()->modules as $module => $config) {
+			foreach(Yii::app()->getModules() as $module => $config) {
 				if (is_array($config)) {
 					$alias = 'application.modules.' . $module . '.' . ltrim($this->migrationSubPath, '.');
 					if (isset($config['class'])) {
