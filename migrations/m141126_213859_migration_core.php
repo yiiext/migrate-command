@@ -1,4 +1,11 @@
 <?php
+
+/**
+ * This migration can be used to adjust your migration table when you switch from
+ * the original migration command to this extension.
+ * You should adjust the timestamp of the migration to the current date and time to
+ * ensure migrations are always applied in the right order.
+ */
 class m141126_213859_migration_core extends CDbMigration
 {
     /**
