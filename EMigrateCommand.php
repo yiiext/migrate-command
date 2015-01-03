@@ -84,7 +84,7 @@ class EMigrateCommand extends MigrateCommand
 			$this->_modulePaths = array();
 			foreach(Yii::app()->modules as $module => $config) {
 				if (is_array($config)) {
-					$alias = 'application.modules.' . $module . '.' . ltrim($this->migrationSubPath, '.');
+					$alias = $module;
 					if (isset($config['class'])) {
 						Yii::setPathOfAlias(
 							$alias,
@@ -97,6 +97,8 @@ class EMigrateCommand extends MigrateCommand
 							$config['basePath'] . '/' .
 								str_replace('.', '/', ltrim($this->migrationSubPath, '.'))
 						);
+					} else {
+						$alias = 'application.modules.' . $module . '.' . ltrim($this->migrationSubPath, '.');
 					}
 					$this->_modulePaths[$module] = $alias;
 					$path = Yii::getPathOfAlias($alias);
