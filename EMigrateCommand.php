@@ -343,14 +343,16 @@ class EMigrateCommand extends MigrateCommand
 		$this->_scopeNewMigrations = true;
 		$migrations = array();
 		// get new migrations for all new modules
-		foreach($this->_runModulePaths as $module => $path)
-		{
-			$this->migrationPath = Yii::getPathOfAlias($path);
-			foreach(parent::getNewMigrations() as $migration) {
-				if ($this->_scopeAddModule) {
-					$migrations[$migration] = $module.$this->moduleDelimiter.$migration;
-				} else {
-					$migrations[$migration] = $migration;
+		if (!is_null($this->_runModulePaths)) {
+			foreach($this->_runModulePaths as $module => $path)
+			{
+				$this->migrationPath = Yii::getPathOfAlias($path);
+				foreach(parent::getNewMigrations() as $migration) {
+					if ($this->_scopeAddModule) {
+						$migrations[$migration] = $module.$this->moduleDelimiter.$migration;
+					} else {
+						$migrations[$migration] = $migration;
+					}
 				}
 			}
 		}
